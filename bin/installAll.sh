@@ -161,7 +161,6 @@ STARTUP_WAVES=(
     "mc-infra-connector mc-infra-manager mc-iam-manager mc-iam-manager-post-initial"
     "mc-data-manager mc-web-console-api mc-web-console-front"
     "mc-observability-manager mc-observability-front mc-observability-insight mc-observability-insight-scheduler mc-observability-mcp-grafana mc-observability-mcp-maria mc-observability-mcp-influx mc-observability-log-collector"
-    "mc-workflow-manager-jenkins"
     "mc-application-manager mc-workflow-manager mc-cost-optimizer-fe"
 )
 
@@ -188,17 +187,6 @@ check_post_initial() {
         echo "⚠️  mc-iam-manager-post-initial did not complete successfully (or never ran)."
         echo "Run the recovery script to finish IAM initialization:"
         echo "   ./bin/iam_manager_init.sh"
-    fi
-}
-
-register_jenkins_credentials() {
-    local bootstrap_script="$PROJECT_ROOT_ABS/tool/jenkins/register-credentials.sh"
-
-    echo ""
-    echo "Registering Jenkins credentials..."
-    if ! bash "$bootstrap_script"; then
-        echo "Error: Jenkins credential registration failed." >&2
-        return 1
     fi
 }
 
@@ -556,18 +544,11 @@ case $RUN_MODE in
             wave_num=$((wave_num + 1))
             echo ""
             echo "---- Wave $wave_num/${#STARTUP_WAVES[@]}: $wave_services ----"
-            if [ "$wave_num" -lt "${#STARTUP_WAVES[@]}" ]; then
-                ./mcc infra run -d -s "$wave_services"
-            else
-                ./mcc infra run -s "$wave_services"
-            fi
+            ./mcc infra run -s "$wave_services"
             run_exit=$?
             if [ $run_exit -ne 0 ]; then
                 report_run_failure "$run_exit" "Wave $wave_num ($wave_services)"
                 exit 1
-            fi
-            if [ "$wave_services" = "mc-workflow-manager-jenkins" ]; then
-                register_jenkins_credentials || exit 1
             fi
         done
 
@@ -604,9 +585,6 @@ case $RUN_MODE in
             if [ $run_exit -ne 0 ]; then
                 report_run_failure "$run_exit" "Wave $wave_num ($wave_services)"
                 exit 1
-            fi
-            if [ "$wave_services" = "mc-workflow-manager-jenkins" ]; then
-                register_jenkins_credentials || exit 1
             fi
         done
 

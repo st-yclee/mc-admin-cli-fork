@@ -1014,7 +1014,6 @@ services:
       - /usr/bin/docker:/usr/bin/docker
       - ./container-volume/mc-workflow-manager/jenkins/:/var/jenkins_home:rw
       - ./tool/init.groovy.d:/usr/share/jenkins/ref/init.groovy.d
-      - ./tool/jenkins:/opt/mcmp/jenkins-credentials:ro
     environment:
       JENKINS_USERNAME: ${MC_WORKFLOW_MANAGER_JENKINS_USERNAME:-admin}
       JENKINS_PASSWORD: ${MC_WORKFLOW_MANAGER_JENKINS_PASSWORD:-123456}

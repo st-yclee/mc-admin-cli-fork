@@ -5,8 +5,6 @@ import hudson.security.*
 // 설치할 플러그인 목록
 def pluginParameter = """
 workflow-api
-credentials
-snakeyaml-api
 swarm
 authorize-project
 antisamy-markup-formatter
